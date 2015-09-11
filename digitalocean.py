@@ -42,7 +42,10 @@ def getSSHkeyID(headers):
 	res = list()
 	r = requests.get("https://api.digitalocean.com/v2/account/keys", headers=headers)
 	# print r.json()['ssh_keys'][0]['id']
-	res.append(r.json()['ssh_keys'][0]['id'])
+	for id in r.json()['ssh_keys']:
+		# print id['id']
+		res.append(id['id'])
+	# res.append(r.json()['ssh_keys'][0]['id'])
 	print res
 	return res
 
@@ -59,10 +62,34 @@ def deleteDroplet(headers, dropletID):
 	r = requests.delete("https://api.digitalocean.com/v2/droplets/" + str(dropletID), params=None, headers=headers)
 	print r.content
 
-# getSSHkeyID(headers)
+def destorySSHKey(headers, key_id):
+	r = requests.delete("https://api.digitalocean.com/v2/account/keys/" + str(key_id), headers=headers)
+	print r.content
+
+def createSSHKey(name, public_key_path, headers):
+	data = {
+		"name": name,
+		"public_key": readKeyFile(public_key_path)
+	}
+	json_params = json.dumps(data)
+	r = requests.post("https://api.digitalocean.com/v2/account/keys", data=json_params, headers=headers)
+	print r.content
+	return r.json()['ssh_key']['id']
+
+def readKeyFile(path):
+	f = open(path, 'r')
+	key = f.read()
+	f.close()
+	return key
+
+# createSSHKey('devops', 'public.key', headers)
+
+getSSHkeyID(headers)
+# print readKeyFile('public.key')
+# destorySSHKey(headers, 1263300)
 # createDroplet('Test2', 'nyc3', 'ubuntu-15-04-x32', headers)
 
 # getDropletsList(headers)
 # retrieveDroplet(headers, 7229651)
-deleteDroplet(headers, 7229651)
+# deleteDroplet(headers, 7229651)
 # listImages(headers)
