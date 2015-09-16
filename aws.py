@@ -1,11 +1,9 @@
-import boto.ec2
 import os
-from boto.ec2 import address
 import time
 import boto3
 
 ec2 = boto3.resource('ec2')
-
+client = boto3.client('ec2')
 
 def createInstances(num, key='mac', security_group='default'):
     instances = ec2.create_instances(
@@ -16,6 +14,20 @@ def createInstances(num, key='mac', security_group='default'):
         InstanceType='t2.micro',
         KeyName=key
     )
+    ids = [ins.id for ins in instances]
+    ips = []
+    for id in ids:
+        ips.append(ec2.Instance(id).public_ip_address)
+    while(True):
+        if all(ips):
+            print "Get IPs: ", ips
+            break
+        else:
+            print "Waiting for IP address"
+            time.sleep(2)
+            ips = []
+            for id in ids:
+                ips.append(ec2.Instance(id).public_ip_address)
     return instances
 
 def createKeyPairs(name, public_key_file):
@@ -48,24 +60,28 @@ def createInventory(instances, key_file):
     ips = []
     for id in ids:
         ips.append(ec2.Instance(id).public_ip_address)
-    while(True):
-        if all(ips):
-            f = open('inventory', 'ab')
-            for i in range(len(ips)):
-                s = '%s ansible_ssh_host=%s ansible_ssh_user=%s ansible_ssh_private_key_file=%s' % (ids[i], ips[i], user, key_file_path,)
-                print >> f, s
-            f.close()
-            break
-        else:
-            print "Waiting for IP address"
-            time.sleep(2)
-            ips = []
-            for id in ids:
-                ips.append(ec2.Instance(id).public_ip_address)
+    f = open('inventory', 'ab')
+    print "Writing to inventory"
+    for i in range(len(ips)):
+        s = '%s ansible_ssh_host=%s ansible_ssh_user=%s ansible_ssh_private_key_file=%s' % (ids[i], ips[i], user, key_file_path,)
+        print s
+        print >> f, s
+    f.close()
 
-instances = createInstances(2)
+def checkIfAllActive(instances):
+    ids = [ins.id for ins in instances]
+    status = client.describe_instance_status(InstanceIds=ids)['InstanceStatuses']
+    if all([s['InstanceStatus']['Details'][0]['Status'] == 'passed' and s['SystemStatus']['Details'][0]['Status'] == 'passed' for s in status]):
+        return True
+    else:
+        return False
 
-createInventory(instances, 'private.key')
+# print checkIfAllActive(['i-5d472bfe', 'i-bc513d1f'])
+
+
+# instances = createInstances(2)
+
+# createInventory(instances, 'private.key')
 
 
 
