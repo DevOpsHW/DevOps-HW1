@@ -52,8 +52,6 @@ def createSecurityGroup(name, description):
 
 
 def createInventory(instances, key_file):
-    # id = conn.get_only_instances()[0].id
-    # ip = conn.get_only_instances()[0].ip_address
     key_file_path = os.path.abspath(key_file)
     user = 'ubuntu'
     ids = [ins.id for ins in instances]
@@ -75,14 +73,3 @@ def checkIfAllActive(instances):
         return True
     else:
         return False
-
-# print checkIfAllActive(['i-5d472bfe', 'i-bc513d1f'])
-
-
-# instances = createInstances(2)
-
-# createInventory(instances, 'private.key')
-
-
-
-# createInventory('private.key')

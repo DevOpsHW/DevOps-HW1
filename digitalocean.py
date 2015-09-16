@@ -78,15 +78,11 @@ class Digitalocean():
             dr = self.retrieveDroplet(droplet.id)['droplet']
             if 'v4' in dr['networks'].keys() and len(dr['networks']['v4']) > 0:
                 print "Get IP address: %s" % dr['networks']['v4'][0]['ip_address']
-                # droplet.updateStatus(self)
                 droplet.ip = dr['networks']['v4'][0]['ip_address']
                 break
             else:
                 print "Waiting for IP address"
-                # print dr
                 time.sleep(1)
-                # droplet.updateStatus(self)
-        # print dr
         self.droplets.append(Droplet(**dr))
         self.ips.append(self.droplets[-1].ip)
         return dr
@@ -96,12 +92,8 @@ class Digitalocean():
         res = list()
         r = requests.get("https://api.digitalocean.com/v2/account/keys", headers=self.headers)
         print r.headers['ratelimit-remaining']
-        # print r.json()['ssh_keys'][0]['id']
         for id in r.json()['ssh_keys']:
-            # print id['id']
             res.append(id['id'])
-        # res.append(r.json()['ssh_keys'][0]['id'])
-        print res
         return res
 
     def getDropletsList(self):
@@ -109,17 +101,10 @@ class Digitalocean():
         r = requests.get("https://api.digitalocean.com/v2/droplets", headers=self.headers)
         for droplet in r.json()['droplets']:
             res.append((droplet['id'], droplet['name'], droplet['networks']['v4'][0]['ip_address'], droplet['status']))
-            # print droplet
-            # if droplet['id'] not in [x.id for x in self.droplets]:
-            #     self.droplets.append(Droplet(**droplet))
-            #     self.ips.append(self.droplets[-1].ip)
-            # print droplet['id'], droplet['name'], droplet['networks']['v4'][0]['ip_address'], droplet['status']
         return res
 
     def retrieveDroplet(self, dropletID):
         r = requests.get("https://api.digitalocean.com/v2/droplets/" + str(dropletID), headers=self.headers)
-        # print r.content
-        # print r.json()['droplet']['networks']['v4'][0]['ip_address']
         return r.json()
 
     def deleteDroplet(self, dropletID):
@@ -154,7 +139,6 @@ class Digitalocean():
                 s = '%d ansible_ssh_host=%s ansible_ssh_user=root ansible_ssh_private_key_file=%s' % (droplet[0], droplet[1], key_file,)
                 print s
                 print >> f, s
-        # f.save()
         f.close()
 
     def checkIfAllActive(self):
@@ -163,57 +147,8 @@ class Digitalocean():
         else:
             return False
 
-def main(argv):
-    token = os.environ["DO_TOKEN"]
-    conn = Digitalocean(token)
-    if argv[1] == 'create':
-        for i in range(argv[2]):
-            print "--"
-        print "hahah"
-        # conn.createDroplet('devops3', 'nyc3', 'ubuntu-14-04-x32')
-        # conn.createDroplet('devops3', 'nyc3', 'ubuntu-14-04-x32')
-        # conn.createDroplet('devops3', 'nyc3', 'ubuntu-14-04-x32')
-        # conn.createInventory(argv[2])
-    print conn.getDropletsList()
-
-
-
-
-# if __name__ == "__main__":
-#     main(sys.argv)
 # token = os.environ["DO_TOKEN"]
 # conn = Digitalocean(token)
-
-
-# conn.createDroplet('devops3', 'nyc3', 'ubuntu-14-04-x32')
-# conn.createDroplet('devops3', 'nyc3', 'ubuntu-14-04-x32')
-# conn.createDroplet('devops3', 'nyc3', 'ubuntu-14-04-x32')
-
 # for droplet in conn.getDropletsList():
 #     print droplet
 #     conn.deleteDroplet(droplet[0])
-
-# for line in conn.getDropletsList():
-#     print line
-# print conn.checkIfAllActive()
-# conn.createInventory('private.key')
-# conn.droplets[-1].checkStatus(conn)
-
-# conn.createInventory('private.key')
-
-# f = open('private.key', 'r')
-
-# print os.path.abspath('private.key')
-# createInventory('104.236.122.221', 'private.key')
-
-# createSSHKey('devops', 'public.key', headers)
-
-# getSSHkeyID(headers)
-# print readKeyFile('public.key')
-# destorySSHKey(headers, 1263300)
-# createDroplet('devops2', 'nyc3', 'ubuntu-14-04-x32', headers)
-
-# getDropletsList(headers)
-# retrieveDroplet(headers, 7229651)
-# deleteDroplet(headers, 7234669)
-# listImages(headers)
