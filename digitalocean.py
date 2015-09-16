@@ -73,7 +73,7 @@ class Digitalocean():
         json_params = json.dumps(data)
         r = requests.post('https://api.digitalocean.com/v2/droplets', data=json_params, headers=self.headers)
         droplet = Droplet(r.json()['droplet']['id'], name, r.json()['droplet']['status'])
-
+        print "Droplet created, ID: ", droplet.id
         while(True):
             dr = self.retrieveDroplet(droplet.id)['droplet']
             if 'v4' in dr['networks'].keys() and len(dr['networks']['v4']) > 0:
@@ -82,7 +82,7 @@ class Digitalocean():
                 break
             else:
                 print "Waiting for IP address"
-                time.sleep(1)
+                time.sleep(3)
         self.droplets.append(Droplet(**dr))
         self.ips.append(self.droplets[-1].ip)
         return dr
@@ -91,7 +91,6 @@ class Digitalocean():
     def getSSHkeyID(self):
         res = list()
         r = requests.get("https://api.digitalocean.com/v2/account/keys", headers=self.headers)
-        print r.headers['ratelimit-remaining']
         for id in r.json()['ssh_keys']:
             res.append(id['id'])
         return res
@@ -134,6 +133,7 @@ class Digitalocean():
         text = f.read()
         f.close()
         f = open('inventory', 'ab')
+        print "Writing to inventory."
         for droplet in [(x[0], x[2]) for x in self.getDropletsList()]:
             if droplet[1] not in text:
                 s = '%d ansible_ssh_host=%s ansible_ssh_user=root ansible_ssh_private_key_file=%s' % (droplet[0], droplet[1], key_file,)

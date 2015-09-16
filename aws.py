@@ -15,6 +15,7 @@ def createInstances(num, key='mac', security_group='default'):
         KeyName=key
     )
     ids = [ins.id for ins in instances]
+    print "Instances created, IDs: ", ids
     ips = []
     for id in ids:
         ips.append(ec2.Instance(id).public_ip_address)
@@ -24,7 +25,7 @@ def createInstances(num, key='mac', security_group='default'):
             break
         else:
             print "Waiting for IP address"
-            time.sleep(2)
+            time.sleep(5)
             ips = []
             for id in ids:
                 ips.append(ec2.Instance(id).public_ip_address)
@@ -69,7 +70,8 @@ def createInventory(instances, key_file):
 def checkIfAllActive(instances):
     ids = [ins.id for ins in instances]
     status = client.describe_instance_status(InstanceIds=ids)['InstanceStatuses']
-    if all([s['InstanceStatus']['Details'][0]['Status'] == 'passed' and s['SystemStatus']['Details'][0]['Status'] == 'passed' for s in status]):
+    # if all([s['InstanceStatus']['Details'][0]['Status'] == 'passed' and s['SystemStatus']['Details'][0]['Status'] == 'passed' for s in status]):
+    if all([s['InstanceState']['Name'] == 'running' for s in status]):
         return True
     else:
         return False
