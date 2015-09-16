@@ -86,7 +86,7 @@ class Digitalocean():
                 # print dr
                 time.sleep(1)
                 # droplet.updateStatus(self)
-        print dr
+        # print dr
         self.droplets.append(Droplet(**dr))
         self.ips.append(self.droplets[-1].ip)
         return dr
@@ -152,6 +152,7 @@ class Digitalocean():
         for droplet in [(x[0], x[2]) for x in self.getDropletsList()]:
             if droplet[1] not in text:
                 s = '%d ansible_ssh_host=%s ansible_ssh_user=root ansible_ssh_private_key_file=%s' % (droplet[0], droplet[1], key_file,)
+                print s
                 print >> f, s
         # f.save()
         f.close()
@@ -178,8 +179,8 @@ def main(argv):
 
 
 
-if __name__ == "__main__":
-    main(sys.argv)
+# if __name__ == "__main__":
+#     main(sys.argv)
 # token = os.environ["DO_TOKEN"]
 # conn = Digitalocean(token)
 
