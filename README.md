@@ -1,8 +1,6 @@
 # DevOps-HW1
 ##Demo
-https://drive.google.com/file/d/0B87f7178bIHnS05QM3hROExmMFk/view?usp=sharing
-
-I said I'll show you the content of my playbook file, but I forgot to show it in the video, please refer to it in my repo :) 
+https://drive.google.com/file/d/0B87f7178bIHnRWF5LTRFTUI1Vm8/view?usp=sharing
 ## Service Providers
 ### AWS
 AWS is group of web services, cloud computing resources provided by Amazon. One of the services I learned about is the Amazon Elastic Compute Cloud (Amazon EC2). It is designed to make web-scale computing easier for developers and system administrators. It's a kind of cloud hosting, so the users can have full control over the instances they created, this brings a lot of convenience to users. Other advantages like EC2 reduces the time required to obtain and boot new server instances to minutes, allowing users to quickly scale capacity, both up and down, as the computing requirements change. And users can only pay for the capacity they required. Also, AWS has APIs written in different programming languages, everyone can find a suitable one for their developing. 
